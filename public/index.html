@@ -804,9 +804,17 @@
                 // API基础URL
                 const API_BASE = '';
                 
+                // 辅助函数：获取本地日期字符串 YYYY-MM-DD
+                const getLocalDateString = (date) => {
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    return `${year}-${month}-${day}`;
+                };
+                
                 // 初始化日期
                 const today = new Date();
-                newTodoDate.value = today.toISOString().split('T')[0];
+                newTodoDate.value = getLocalDateString(today);
                 
                 // 获取待办列表
                 const fetchTodos = async () => {
@@ -953,12 +961,13 @@
                     const firstDayOfWeek = firstDay.getDay();
                     
                     const days = [];
-                    const today = new Date().toISOString().split('T')[0];
+                    const today = getLocalDateString(new Date());
                     
                     // 上个月的日期
                     const prevMonthLastDay = new Date(year, month, 0).getDate();
                     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
-                        const date = new Date(year, month - 1, prevMonthLastDay - i).toISOString().split('T')[0];
+                        const dateObj = new Date(year, month - 1, prevMonthLastDay - i);
+                        const date = getLocalDateString(dateObj);
                         days.push({
                             date,
                             dayNumber: prevMonthLastDay - i,
@@ -970,7 +979,8 @@
                     
                     // 当月的日期
                     for (let i = 1; i <= daysInMonth; i++) {
-                        const date = new Date(year, month, i).toISOString().split('T')[0];
+                        const dateObj = new Date(year, month, i);
+                        const date = getLocalDateString(dateObj);
                         days.push({
                             date,
                             dayNumber: i,
@@ -983,7 +993,8 @@
                     // 下个月的日期
                     const remainingDays = (7 - (days.length % 7)) % 7;
                     for (let i = 1; i <= remainingDays; i++) {
-                        const date = new Date(year, month + 1, i).toISOString().split('T')[0];
+                        const dateObj = new Date(year, month + 1, i);
+                        const date = getLocalDateString(dateObj);
                         days.push({
                             date,
                             dayNumber: i,
@@ -1018,7 +1029,7 @@
                     const now = new Date();
                     currentYear.value = now.getFullYear();
                     currentMonth.value = now.getMonth();
-                    selectedDate.value = now.toISOString().split('T')[0];
+                    selectedDate.value = getLocalDateString(now);
                     newTodoDate.value = selectedDate.value;
                     currentPage.value = 1;
                 };
@@ -1047,13 +1058,14 @@
                 
                 // 格式化日期
                 const formatDate = (dateStr) => {
-                    const date = new Date(dateStr);
-                    const today = new Date().toISOString().split('T')[0];
+                    const date = new Date(dateStr + 'T00:00:00');
+                    const today = getLocalDateString(new Date());
                     const tomorrow = new Date();
                     tomorrow.setDate(tomorrow.getDate() + 1);
+                    const tomorrowStr = getLocalDateString(tomorrow);
                     
                     if (dateStr === today) return '今天';
-                    if (dateStr === tomorrow.toISOString().split('T')[0]) return '明天';
+                    if (dateStr === tomorrowStr) return '明天';
                     
                     return `${date.getMonth() + 1}月${date.getDate()}日`;
                 };
