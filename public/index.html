@@ -4,153 +4,1082 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人工作台</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #f1f5f9;
+        }
+        
+        #app {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header .date {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-title .icon {
+            font-size: 20px;
+        }
+        
+        /* 待办管理样式 */
+        .todo-input {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .todo-input input {
+            flex: 1;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-size: 14px;
+        }
+        
+        .todo-input input:focus {
+            outline: none;
+            border-color: #60a5fa;
+        }
+        
+        .todo-input button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .todo-input button:hover {
+            opacity: 0.9;
+        }
+        
+        .filter-info {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .filter-info .clear-btn {
+            color: #60a5fa;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .filter-info .clear-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .todo-list {
+            min-height: 200px;
+        }
+        
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        
+        .todo-item:hover {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+        
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(148, 163, 184, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .todo-checkbox:hover {
+            border-color: #3b82f6;
+        }
+        
+        .todo-checkbox.checked {
+            background: #10b981;
+            border-color: #10b981;
+        }
+        
+        .todo-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+        }
+        
+        .todo-content {
+            flex: 1;
+        }
+        
+        .todo-text {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .todo-date {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .todo-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .todo-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .todo-actions .edit-btn {
+            background: rgba(96, 165, 250, 0.2);
+            color: #60a5fa;
+        }
+        
+        .todo-actions .delete-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .todo-actions button:hover {
+            opacity: 0.8;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 16px;
+            gap: 8px;
+        }
+        
+        .pagination button {
+            padding: 8px 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 6px;
+            color: #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .pagination .active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+        
+        /* 月历样式 */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        
+        .calendar-weekday {
+            text-align: center;
+            padding: 10px 4px;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        
+        .calendar-day {
+            min-height: 70px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 8px;
+            padding: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        
+        .calendar-day:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+        
+        .calendar-day.today {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-color: transparent;
+        }
+        
+        .calendar-day.selected {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+        }
+        
+        .calendar-day-number {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .calendar-todos {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .calendar-todo-item {
+            font-size: 10px;
+            padding: 2px 4px;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #94a3b8;
+        }
+        
+        .calendar-todo-item.completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #64748b;
+            text-decoration: line-through;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .calendar-header h3 {
+            font-size: 16px;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .calendar-nav button {
+            padding: 6px 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 6px;
+            color: #f1f5f9;
+            cursor: pointer;
+        }
+        
+        /* 收藏区域样式 */
+        .bookmark-section {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        
+        .bookmark-input {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .bookmark-input input, .bookmark-input select {
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-size: 14px;
+        }
+        
+        .bookmark-input input[name="title"] {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .bookmark-input input[name="url"] {
+            flex: 2;
+            min-width: 200px;
+        }
+        
+        .bookmark-input button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .bookmark-categories {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .bookmark-category {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        
+        .category-label {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 500;
+            min-width: 60px;
+            padding-top: 8px;
+        }
+        
+        .bookmark-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .bookmark-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        
+        .bookmark-item:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .bookmark-icon {
+            font-size: 18px;
+        }
+        
+        .bookmark-title {
+            font-size: 14px;
+            color: #f1f5f9;
+        }
+        
+        .bookmark-delete {
+            margin-left: 4px;
+            padding: 2px 6px;
+            background: rgba(239, 68, 68, 0.2);
+            border: none;
+            border-radius: 4px;
+            color: #ef4444;
+            font-size: 11px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .bookmark-item:hover .bookmark-delete {
+            opacity: 1;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+        
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- 侧边栏 -->
-        <aside class="sidebar">
-            <div class="logo">
-                <span class="logo-icon">🎯</span>
-                <span class="logo-text">我的工作台</span>
-            </div>
-            <nav class="nav-menu">
-                <button class="nav-item active" data-view="dashboard">
-                    <span class="nav-icon">📊</span>
-                    <span>总览</span>
-                </button>
-                <button class="nav-item" data-view="todos">
-                    <span class="nav-icon">✅</span>
-                    <span>待办事项</span>
-                </button>
-                <button class="nav-item" data-view="calendar">
-                    <span class="nav-icon">📅</span>
-                    <span>日历</span>
-                </button>
-                <button class="nav-item" data-view="bookmarks">
-                    <span class="nav-icon">🔖</span>
-                    <span>网址收藏</span>
-                </button>
-            </nav>
-            <div class="sidebar-footer">
-                <p>数据自动保存在本地</p>
-            </div>
-        </aside>
-
-        <!-- 主内容 -->
-        <main class="main-content">
-            <header class="header">
-                <h1 id="page-title">工作台总览</h1>
-                <span id="current-date"></span>
-            </header>
-
-            <div class="views-container">
-                <!-- 总览 -->
-                <div id="dashboard-view" class="view active">
-                    <div class="dashboard-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon">📋</div>
-                            <div class="stat-value" id="todo-count">0</div>
-                            <div class="stat-label">待办任务</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">✨</div>
-                            <div class="stat-value" id="completed-count">0</div>
-                            <div class="stat-label">已完成</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">🔖</div>
-                            <div class="stat-value" id="bookmark-count">0</div>
-                            <div class="stat-label">收藏网址</div>
-                        </div>
-                        <div class="stat-card today">
-                            <div class="stat-icon">📅</div>
-                            <div class="stat-value" id="today-date">-</div>
-                            <div class="stat-label" id="today-weekday">-</div>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <h2>今日待办</h2>
-                        <div id="dashboard-todos" class="preview-list"></div>
-                    </div>
-
-                    <div class="section">
-                        <h2>快速访问</h2>
-                        <div id="dashboard-bookmarks" class="preview-list"></div>
-                    </div>
+    <div id="app">
+        <div class="header">
+            <h1>🎯 个人工作台</h1>
+            <div class="date">{{ currentDate }}</div>
+        </div>
+        
+        <div class="main-grid">
+            <!-- 待办管理 -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">✅</span>
+                    <span>待办管理</span>
                 </div>
-
-                <!-- 待办 -->
-                <div id="todos-view" class="view">
-                    <div class="todo-input-section">
-                        <input type="text" id="todo-input" placeholder="添加新的待办事项...">
-                        <input type="date" id="todo-date">
-                        <select id="todo-priority">
-                            <option value="low">低优先级</option>
-                            <option value="medium" selected>中优先级</option>
-                            <option value="high">高优先级</option>
-                        </select>
-                        <button class="btn btn-primary" onclick="addTodo()">添加</button>
+                
+                <div class="todo-input">
+                    <input 
+                        type="text" 
+                        v-model="newTodoText" 
+                        placeholder="添加新的待办事项..."
+                        @keyup.enter="addTodo"
+                    >
+                    <input 
+                        type="date" 
+                        v-model="newTodoDate"
+                        style="width: 140px;"
+                    >
+                    <button @click="addTodo">添加</button>
+                </div>
+                
+                <div class="filter-info" v-if="selectedDate">
+                    <span>📅 筛选日期: {{ formatDate(selectedDate) }}</span>
+                    <span class="clear-btn" @click="clearFilter">清除筛选</span>
+                </div>
+                
+                <div class="todo-list">
+                    <div 
+                        v-for="todo in paginatedTodos" 
+                        :key="todo.id"
+                        class="todo-item"
+                        :class="{ completed: todo.completed }"
+                    >
+                        <div 
+                            class="todo-checkbox"
+                            :class="{ checked: todo.completed }"
+                            @click="toggleTodo(todo)"
+                        ></div>
+                        <div class="todo-content">
+                            <div class="todo-text">{{ todo.text }}</div>
+                            <div class="todo-date">{{ formatDate(todo.date) }}</div>
+                        </div>
+                        <div class="todo-actions">
+                            <button class="edit-btn" @click="editTodo(todo)">编辑</button>
+                            <button class="delete-btn" @click="deleteTodo(todo.id)">删除</button>
+                        </div>
                     </div>
                     
-                    <div class="todo-filters">
-                        <button class="filter-btn active" data-filter="all">全部</button>
-                        <button class="filter-btn" data-filter="active">进行中</button>
-                        <button class="filter-btn" data-filter="completed">已完成</button>
+                    <div v-if="filteredTodos.length === 0" class="empty-state">
+                        暂无待办事项
                     </div>
-
-                    <div class="todo-list" id="todo-list"></div>
                 </div>
-
-                <!-- 日历 -->
-                <div id="calendar-view" class="view">
-                    <div class="calendar-header">
-                        <button class="btn" onclick="changeMonth(-1)">‹</button>
-                        <h2 id="calendar-month-year"></h2>
-                        <button class="btn" onclick="changeMonth(1)">›</button>
-                    </div>
-                    <div class="calendar-grid" id="calendar-grid"></div>
-                </div>
-
-                <!-- 收藏 -->
-                <div id="bookmarks-view" class="view">
-                    <div class="bookmark-input-section">
-                        <input type="text" id="bookmark-title" placeholder="网站名称">
-                        <input type="url" id="bookmark-url" placeholder="https://...">
-                        <select id="bookmark-category">
-                            <option value="work">工作</option>
-                            <option value="learn">学习</option>
-                            <option value="entertain">娱乐</option>
-                            <option value="tool">工具</option>
-                            <option value="other">其他</option>
-                        </select>
-                        <button class="btn btn-primary" onclick="addBookmark()">添加收藏</button>
-                    </div>
-                    <div class="bookmark-categories" id="bookmark-list"></div>
+                
+                <!-- 分页 -->
+                <div class="pagination" v-if="totalPages > 1">
+                    <button 
+                        :disabled="currentPage === 1"
+                        @click="currentPage--"
+                    >上一页</button>
+                    
+                    <button 
+                        v-for="page in displayedPages"
+                        :key="page"
+                        :class="{ active: page === currentPage }"
+                        @click="currentPage = page"
+                    >{{ page }}</button>
+                    
+                    <button 
+                        :disabled="currentPage === totalPages"
+                        @click="currentPage++"
+                    >下一页</button>
                 </div>
             </div>
-        </main>
-    </div>
-
-    <!-- 编辑弹窗 -->
-    <div id="edit-modal" class="modal">
-        <div class="modal-content">
-            <h3>编辑待办</h3>
-            <input type="text" id="edit-todo-text">
-            <input type="date" id="edit-todo-date">
-            <select id="edit-todo-priority">
-                <option value="low">低优先级</option>
-                <option value="medium">中优先级</option>
-                <option value="high">高优先级</option>
-            </select>
-            <div class="modal-actions">
-                <button class="btn" onclick="closeModal()">取消</button>
-                <button class="btn btn-primary" onclick="saveEdit()">保存</button>
+            
+            <!-- 月历 -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">📅</span>
+                    <span>月历</span>
+                </div>
+                
+                <div class="calendar-header">
+                    <button class="calendar-nav" @click="changeMonth(-1)">‹</button>
+                    <h3>{{ currentYear }}年{{ currentMonth + 1 }}月</h3>
+                    <button class="calendar-nav" @click="changeMonth(1)">›</button>
+                </div>
+                
+                <div class="calendar-grid">
+                    <div class="calendar-weekday" v-for="day in weekdays" :key="day">{{ day }}</div>
+                    
+                    <div 
+                        v-for="day in calendarDays"
+                        :key="day.date"
+                        class="calendar-day"
+                        :class="{
+                            'other-month': day.isOtherMonth,
+                            'today': day.isToday,
+                            'selected': day.date === selectedDate
+                        }"
+                        @click="selectDate(day.date)"
+                    >
+                        <div class="calendar-day-number">{{ day.dayNumber }}</div>
+                        <div class="calendar-todos">
+                            <div 
+                                v-for="todo in day.todos.slice(0, 3)"
+                                :key="todo.id"
+                                class="calendar-todo-item"
+                                :class="{ completed: todo.completed }"
+                            >{{ todo.text }}</div>
+                            <div v-if="day.todos.length > 3" style="font-size: 10px; color: #64748b;">+{{ day.todos.length - 3 }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 收藏网址 -->
+        <div class="bookmark-section">
+            <div class="card-title">
+                <span class="icon">🔖</span>
+                <span>网址收藏</span>
+            </div>
+            
+            <div class="bookmark-input">
+                <input type="text" v-model="newBookmarkTitle" placeholder="网站名称" name="title">
+                <input type="url" v-model="newBookmarkUrl" placeholder="https://..." name="url">
+                <select v-model="newBookmarkCategory">
+                    <option value="work">工作</option>
+                    <option value="tool">工具</option>
+                    <option value="learn">学习</option>
+                    <option value="entertain">娱乐</option>
+                </select>
+                <button @click="addBookmark">添加收藏</button>
+            </div>
+            
+            <div class="bookmark-categories">
+                <div v-for="(items, category) in groupedBookmarks" :key="category" class="bookmark-category">
+                    <span class="category-label">{{ categoryNames[category] }}</span>
+                    <div class="bookmark-items">
+                        <div 
+                            v-for="bookmark in items"
+                            :key="bookmark.id"
+                            class="bookmark-item"
+                            @click="openBookmark(bookmark.url)"
+                        >
+                            <span class="bookmark-icon">{{ categoryIcons[category] }}</span>
+                            <span class="bookmark-title">{{ bookmark.title }}</span>
+                            <button 
+                                class="bookmark-delete"
+                                @click.stop="deleteBookmark(bookmark.id)"
+                            >删除</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div v-if="bookmarks.length === 0" class="empty-state">
+                    暂无收藏网址
+                </div>
+            </div>
+        </div>
+        
+        <!-- 编辑弹窗 -->
+        <div v-if="editingTodo" class="modal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+            <div style="background: #1e293b; padding: 24px; border-radius: 16px; width: 90%; max-width: 400px;">
+                <h3 style="margin-bottom: 16px;">编辑待办</h3>
+                <input 
+                    type="text" 
+                    v-model="editingTodo.text"
+                    style="width: 100%; padding: 10px; background: rgba(15,23,42,0.6); border: 1px solid rgba(148,163,184,0.2); border-radius: 8px; color: #f1f5f9; margin-bottom: 12px;"
+                >
+                <input 
+                    type="date" 
+                    v-model="editingTodo.date"
+                    style="width: 100%; padding: 10px; background: rgba(15,23,42,0.6); border: 1px solid rgba(148,163,184,0.2); border-radius: 8px; color: #f1f5f9; margin-bottom: 16px;"
+                >
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button @click="editingTodo = null" style="padding: 8px 16px; background: rgba(148,163,184,0.2); border: none; border-radius: 6px; color: #f1f5f9; cursor: pointer;">取消</button>
+                    <button @click="saveEdit" style="padding: 8px 16px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; border-radius: 6px; color: white; cursor: pointer;">保存</button>
+                </div>
             </div>
         </div>
     </div>
-
-    <script src="app.js"></script>
+    
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp, ref, computed, onMounted } = Vue;
+        
+        createApp({
+            setup() {
+                // 当前日期
+                const currentDate = ref('');
+                const updateCurrentDate = () => {
+                    const now = new Date();
+                    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+                    currentDate.value = now.toLocaleDateString('zh-CN', options);
+                };
+                
+                // 待办数据
+                const todos = ref([]);
+                const newTodoText = ref('');
+                const newTodoDate = ref('');
+                const editingTodo = ref(null);
+                
+                // 分页
+                const currentPage = ref(1);
+                const pageSize = 10;
+                
+                // 筛选
+                const selectedDate = ref('');
+                
+                // 月历
+                const currentYear = ref(new Date().getFullYear());
+                const currentMonth = ref(new Date().getMonth());
+                const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+                
+                // 收藏
+                const bookmarks = ref([]);
+                const newBookmarkTitle = ref('');
+                const newBookmarkUrl = ref('');
+                const newBookmarkCategory = ref('tool');
+                
+                const categoryNames = {
+                    work: '💼 工作',
+                    tool: '🛠️ 工具',
+                    learn: '📚 学习',
+                    entertain: '🎮 娱乐'
+                };
+                
+                const categoryIcons = {
+                    work: '💼',
+                    tool: '🛠️',
+                    learn: '📚',
+                    entertain: '🎮'
+                };
+                
+                // API基础URL
+                const API_BASE = '';
+                
+                // 初始化日期
+                const today = new Date();
+                newTodoDate.value = today.toISOString().split('T')[0];
+                
+                // 获取待办列表
+                const fetchTodos = async () => {
+                    try {
+                        const response = await fetch(`${API_BASE}/api/todos`);
+                        todos.value = await response.json();
+                    } catch (err) {
+                        console.error('获取待办失败:', err);
+                    }
+                };
+                
+                // 获取收藏列表
+                const fetchBookmarks = async () => {
+                    try {
+                        const response = await fetch(`${API_BASE}/api/bookmarks`);
+                        bookmarks.value = await response.json();
+                    } catch (err) {
+                        console.error('获取收藏失败:', err);
+                    }
+                };
+                
+                // 筛选后的待办
+                const filteredTodos = computed(() => {
+                    let result = todos.value;
+                    
+                    // 按日期筛选
+                    if (selectedDate.value) {
+                        result = result.filter(t => t.date === selectedDate.value);
+                    }
+                    
+                    // 排序：最新的在前
+                    result = [...result].sort((a, b) => {
+                        return new Date(b.created_at) - new Date(a.created_at);
+                    });
+                    
+                    return result;
+                });
+                
+                // 分页后的待办
+                const paginatedTodos = computed(() => {
+                    const start = (currentPage.value - 1) * pageSize;
+                    return filteredTodos.value.slice(start, start + pageSize);
+                });
+                
+                // 总页数
+                const totalPages = computed(() => {
+                    return Math.ceil(filteredTodos.value.length / pageSize);
+                });
+                
+                // 显示的分页按钮
+                const displayedPages = computed(() => {
+                    const pages = [];
+                    for (let i = 1; i <= totalPages.value; i++) {
+                        pages.push(i);
+                    }
+                    return pages;
+                });
+                
+                // 监听筛选变化，重置页码
+                const clearFilter = () => {
+                    selectedDate.value = '';
+                    currentPage.value = 1;
+                };
+                
+                // 添加待办
+                const addTodo = async () => {
+                    if (!newTodoText.value.trim()) return;
+                    
+                    try {
+                        await fetch(`${API_BASE}/api/todos`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                text: newTodoText.value,
+                                date: newTodoDate.value,
+                                priority: 'medium'
+                            })
+                        });
+                        
+                        newTodoText.value = '';
+                        await fetchTodos();
+                    } catch (err) {
+                        alert('添加失败');
+                    }
+                };
+                
+                // 切换完成状态
+                const toggleTodo = async (todo) => {
+                    try {
+                        await fetch(`${API_BASE}/api/todos/${todo.id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                ...todo,
+                                completed: !todo.completed
+                            })
+                        });
+                        await fetchTodos();
+                    } catch (err) {
+                        alert('更新失败');
+                    }
+                };
+                
+                // 删除待办
+                const deleteTodo = async (id) => {
+                    if (!confirm('确定删除吗？')) return;
+                    
+                    try {
+                        await fetch(`${API_BASE}/api/todos/${id}`, { method: 'DELETE' });
+                        await fetchTodos();
+                    } catch (err) {
+                        alert('删除失败');
+                    }
+                };
+                
+                // 编辑待办
+                const editTodo = (todo) => {
+                    editingTodo.value = { ...todo };
+                };
+                
+                // 保存编辑
+                const saveEdit = async () => {
+                    try {
+                        await fetch(`${API_BASE}/api/todos/${editingTodo.value.id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(editingTodo.value)
+                        });
+                        editingTodo.value = null;
+                        await fetchTodos();
+                    } catch (err) {
+                        alert('保存失败');
+                    }
+                };
+                
+                // 月历数据
+                const calendarDays = computed(() => {
+                    const year = currentYear.value;
+                    const month = currentMonth.value;
+                    
+                    const firstDay = new Date(year, month, 1);
+                    const lastDay = new Date(year, month + 1, 0);
+                    const daysInMonth = lastDay.getDate();
+                    const firstDayOfWeek = firstDay.getDay();
+                    
+                    const days = [];
+                    const today = new Date().toISOString().split('T')[0];
+                    
+                    // 上个月的日期
+                    const prevMonthLastDay = new Date(year, month, 0).getDate();
+                    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+                        const date = new Date(year, month - 1, prevMonthLastDay - i).toISOString().split('T')[0];
+                        days.push({
+                            date,
+                            dayNumber: prevMonthLastDay - i,
+                            isOtherMonth: true,
+                            isToday: date === today,
+                            todos: getTodosByDate(date)
+                        });
+                    }
+                    
+                    // 当月的日期
+                    for (let i = 1; i <= daysInMonth; i++) {
+                        const date = new Date(year, month, i).toISOString().split('T')[0];
+                        days.push({
+                            date,
+                            dayNumber: i,
+                            isOtherMonth: false,
+                            isToday: date === today,
+                            todos: getTodosByDate(date)
+                        });
+                    }
+                    
+                    // 下个月的日期
+                    const remainingDays = (7 - (days.length % 7)) % 7;
+                    for (let i = 1; i <= remainingDays; i++) {
+                        const date = new Date(year, month + 1, i).toISOString().split('T')[0];
+                        days.push({
+                            date,
+                            dayNumber: i,
+                            isOtherMonth: true,
+                            isToday: date === today,
+                            todos: getTodosByDate(date)
+                        });
+                    }
+                    
+                    return days;
+                });
+                
+                // 获取某日期的待办
+                const getTodosByDate = (date) => {
+                    return todos.value.filter(t => t.date === date && !t.completed);
+                };
+                
+                // 切换月份
+                const changeMonth = (delta) => {
+                    currentMonth.value += delta;
+                    if (currentMonth.value > 11) {
+                        currentMonth.value = 0;
+                        currentYear.value++;
+                    } else if (currentMonth.value < 0) {
+                        currentMonth.value = 11;
+                        currentYear.value--;
+                    }
+                };
+                
+                // 选择日期
+                const selectDate = (date) => {
+                    selectedDate.value = date;
+                    currentPage.value = 1;
+                };
+                
+                // 格式化日期
+                const formatDate = (dateStr) => {
+                    const date = new Date(dateStr);
+                    const today = new Date().toISOString().split('T')[0];
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    
+                    if (dateStr === today) return '今天';
+                    if (dateStr === tomorrow.toISOString().split('T')[0]) return '明天';
+                    
+                    return `${date.getMonth() + 1}月${date.getDate()}日`;
+                };
+                
+                // 按分类分组的收藏
+                const groupedBookmarks = computed(() => {
+                    const groups = {};
+                    bookmarks.value.forEach(b => {
+                        if (!groups[b.category]) groups[b.category] = [];
+                        groups[b.category].push(b);
+                    });
+                    return groups;
+                });
+                
+                // 添加收藏
+                const addBookmark = async () => {
+                    if (!newBookmarkTitle.value.trim() || !newBookmarkUrl.value.trim()) return;
+                    
+                    let url = newBookmarkUrl.value;
+                    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                        url = 'https://' + url;
+                    }
+                    
+                    try {
+                        await fetch(`${API_BASE}/api/bookmarks`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                title: newBookmarkTitle.value,
+                                url: url,
+                                category: newBookmarkCategory.value
+                            })
+                        });
+                        
+                        newBookmarkTitle.value = '';
+                        newBookmarkUrl.value = '';
+                        await fetchBookmarks();
+                    } catch (err) {
+                        alert('添加失败');
+                    }
+                };
+                
+                // 删除收藏
+                const deleteBookmark = async (id) => {
+                    if (!confirm('确定删除吗？')) return;
+                    
+                    try {
+                        await fetch(`${API_BASE}/api/bookmarks/${id}`, { method: 'DELETE' });
+                        await fetchBookmarks();
+                    } catch (err) {
+                        alert('删除失败');
+                    }
+                };
+                
+                // 打开收藏
+                const openBookmark = (url) => {
+                    window.open(url, '_blank');
+                };
+                
+                // 初始化默认收藏
+                const initDefaultBookmarks = async () => {
+                    if (bookmarks.value.length === 0) {
+                        const defaults = [
+                            { title: 'GitHub', url: 'https://github.com', category: 'tool' },
+                            { title: 'Render', url: 'https://render.com', category: 'tool' }
+                        ];
+                        
+                        for (const b of defaults) {
+                            try {
+                                await fetch(`${API_BASE}/api/bookmarks`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(b)
+                                });
+                            } catch (e) {}
+                        }
+                        await fetchBookmarks();
+                    }
+                };
+                
+                // 初始化
+                onMounted(() => {
+                    updateCurrentDate();
+                    fetchTodos();
+                    fetchBookmarks().then(() => initDefaultBookmarks());
+                });
+                
+                return {
+                    currentDate,
+                    todos,
+                    newTodoText,
+                    newTodoDate,
+                    editingTodo,
+                    currentPage,
+                    pageSize,
+                    selectedDate,
+                    currentYear,
+                    currentMonth,
+                    weekdays,
+                    bookmarks,
+                    newBookmarkTitle,
+                    newBookmarkUrl,
+                    newBookmarkCategory,
+                    categoryNames,
+                    categoryIcons,
+                    filteredTodos,
+                    paginatedTodos,
+                    totalPages,
+                    displayedPages,
+                    calendarDays,
+                    groupedBookmarks,
+                    clearFilter,
+                    addTodo,
+                    toggleTodo,
+                    deleteTodo,
+                    editTodo,
+                    saveEdit,
+                    changeMonth,
+                    selectDate,
+                    formatDate,
+                    addBookmark,
+                    deleteBookmark,
+                    openBookmark
+                };
+            }
+        }).mount('#app');
+    </script>
 </body>
 </html>
