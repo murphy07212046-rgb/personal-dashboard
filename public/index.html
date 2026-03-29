@@ -1007,9 +1007,9 @@
                     return days;
                 });
                 
-                // 获取某日期的待办
+                // 获取某日期的待办（用于月历显示，包含已完成和未完成）
                 const getTodosByDate = (date) => {
-                    return todos.value.filter(t => t.date === date && !t.completed);
+                    return todos.value.filter(t => t.date === date);
                 };
                 
                 // 切换月份
@@ -1036,18 +1036,10 @@
                 
                 // 处理日历点击
                 const handleCalendarClick = (day) => {
-                    if (day.todos.length > 0) {
-                        // 有待办，筛选该日期
-                        selectedDate.value = day.date;
-                        currentPage.value = 1;
-                    } else {
-                        // 没有待办，填充日期到添加待办的输入框
-                        newTodoDate.value = day.date;
-                        selectedDate.value = '';
-                        currentPage.value = 1;
-                        // 可以添加提示
-                        // alert(`已选择 ${formatDate(day.date)}，请在上方输入待办内容`);
-                    }
+                    // 总是筛选点击的日期
+                    selectedDate.value = day.date;
+                    newTodoDate.value = day.date;
+                    currentPage.value = 1;
                 };
                 
                 // 选择日期
