@@ -79,7 +79,7 @@
             margin-bottom: 16px;
         }
         
-        .todo-input input {
+        .todo-input input[type="text"] {
             flex: 1;
             padding: 10px 14px;
             background: rgba(15, 23, 42, 0.6);
@@ -89,9 +89,51 @@
             font-size: 14px;
         }
         
-        .todo-input input:focus {
+        .todo-input input[type="text"]:focus {
             outline: none;
-            border-color: #60a5fa;
+            border-color: #2563eb;
+        }
+        
+        /* 日期选择器样式 */
+        .date-picker-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .date-picker-wrapper input[type="date"] {
+            width: 140px;
+            padding: 10px 14px;
+            padding-right: 32px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .date-picker-wrapper input[type="date"]:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        
+        .date-picker-wrapper .calendar-icon {
+            position: absolute;
+            right: 10px;
+            pointer-events: none;
+            font-size: 14px;
+        }
+        
+        /* 隐藏原生日期选择器的日历图标 */
+        .date-picker-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            cursor: pointer;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
         }
         
         .todo-input button {
@@ -343,15 +385,42 @@
         .calendar-nav {
             display: flex;
             gap: 8px;
+            align-items: center;
         }
         
-        .calendar-nav button {
-            padding: 6px 12px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 6px;
+        /* 月份切换按钮 - 放大 */
+        .calendar-nav .nav-btn {
+            padding: 12px 20px;
+            background: rgba(37, 99, 235, 0.2);
+            border: 1px solid rgba(37, 99, 235, 0.4);
+            border-radius: 8px;
             color: #f1f5f9;
             cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.2s;
+            min-width: 50px;
+        }
+        
+        .calendar-nav .nav-btn:hover {
+            background: rgba(37, 99, 235, 0.4);
+            border-color: #2563eb;
+        }
+        
+        /* 回到今天按钮 */
+        .today-btn {
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 8px;
+            color: #10b981;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        
+        .today-btn:hover {
+            background: rgba(16, 185, 129, 0.4);
         }
         
         /* 收藏区域样式 */
@@ -505,11 +574,13 @@
                         placeholder="添加新的待办事项..."
                         @keyup.enter="addTodo"
                     >
-                    <input 
-                        type="date" 
-                        v-model="newTodoDate"
-                        style="width: 140px;"
-                    >
+                    <div class="date-picker-wrapper">
+                        <input 
+                            type="date" 
+                            v-model="newTodoDate"
+                        >
+                        <span class="calendar-icon">📅</span>
+                    </div>
                     <button @click="addTodo">添加</button>
                 </div>
                 
@@ -574,9 +645,12 @@
                 </div>
                 
                 <div class="calendar-header">
-                    <button class="calendar-nav" @click="changeMonth(-1)">‹</button>
+                    <div class="calendar-nav">
+                        <button class="nav-btn" @click="changeMonth(-1)">‹</button>
+                        <button class="today-btn" @click="goToToday">今天</button>
+                        <button class="nav-btn" @click="changeMonth(1)">›</button>
+                    </div>
                     <h3>{{ currentYear }}年{{ currentMonth + 1 }}月</h3>
-                    <button class="calendar-nav" @click="changeMonth(1)">›</button>
                 </div>
                 
                 <div class="calendar-grid">
@@ -591,7 +665,7 @@
                             'today': day.isToday,
                             'selected': day.date === selectedDate
                         }"
-                        @click="selectDate(day.date)"
+                        @click="handleCalendarClick(day)"
                     >
                         <div class="calendar-day-number">{{ day.dayNumber }}</div>
                         <div class="calendar-todos">
@@ -939,6 +1013,32 @@
                     }
                 };
                 
+                // 回到今天
+                const goToToday = () => {
+                    const now = new Date();
+                    currentYear.value = now.getFullYear();
+                    currentMonth.value = now.getMonth();
+                    selectedDate.value = now.toISOString().split('T')[0];
+                    newTodoDate.value = selectedDate.value;
+                    currentPage.value = 1;
+                };
+                
+                // 处理日历点击
+                const handleCalendarClick = (day) => {
+                    if (day.todos.length > 0) {
+                        // 有待办，筛选该日期
+                        selectedDate.value = day.date;
+                        currentPage.value = 1;
+                    } else {
+                        // 没有待办，填充日期到添加待办的输入框
+                        newTodoDate.value = day.date;
+                        selectedDate.value = '';
+                        currentPage.value = 1;
+                        // 可以添加提示
+                        // alert(`已选择 ${formatDate(day.date)}，请在上方输入待办内容`);
+                    }
+                };
+                
                 // 选择日期
                 const selectDate = (date) => {
                     selectedDate.value = date;
@@ -1072,6 +1172,8 @@
                     editTodo,
                     saveEdit,
                     changeMonth,
+                    goToToday,
+                    handleCalendarClick,
                     selectDate,
                     formatDate,
                     addBookmark,
